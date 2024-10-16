@@ -1,0 +1,16 @@
+{
+  "name": "cypress",
+  "version": "1.0.0",
+  "description": "Cypress presentation by Shotsware",
+  "main": "index.js",
+  "scripts": {
+    "cypress:open": "cypress open",
+    "cypress:open-ordered": "npx cypress run --spec 'cypress/e2e/login.cy.js' && npx cypress run --spec 'cypress/e2e/search.cy.js' && npx cypress run --spec 'cypress/e2e/users/create.cy.js' && npx cypress run --spec 'cypress/e2e/users/update.cy.js' && npx cypress run --spec 'cypress/e2e/users/delete.cy.js'"
+  },
+  "author": "Manuel Antonio Cetina Aguilar",
+  "license": "ISC",
+  "devDependencies": {
+    "cypress": "^13.15.0",
+    "cypress-plugin-steps": "^1.1.1"
+  }
+}
