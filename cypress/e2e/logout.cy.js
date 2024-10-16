@@ -8,11 +8,11 @@ describe('logout', () => {
     cy.get('#usuario').type(Cypress.env('username'))
     cy.get('#contraseña').type(Cypress.env('password'))
     cy.get('button[type="submit"]').click()
-    cy.wait(2500)
+    cy.wait(1500)
   })
 
   it('passes', () => {
     cy.get('li.dropdown.profile').click()
-    cy.contains('a', 'Log Out').click();
+    cy.contains('a', 'Log Out').wait(5000).click();
   })
 })

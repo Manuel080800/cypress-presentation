@@ -7,6 +7,6 @@ describe('login', () => {
     cy.get('#usuario').type(Cypress.env('username'))
     cy.get('#contraseña').type(Cypress.env('password'))
     cy.get('button[type="submit"]').click()
-    cy.wait(5000)
+    cy.get('.pageheader').wait(2000).should('contain', 'Dashboard')
   })
 })
