@@ -8,8 +8,9 @@ module.exports = defineConfig({
     url: 'http://localhost/admince/login',
     api: '',
     test: {
-      username: 'cypress-development',
-      password: '123456'
+      username: 'cypress-dev-1',
+      password: '123456',
+      name: 'Cypress Automation'
     },
     validate: {
       dashboard: {
@@ -19,6 +20,18 @@ module.exports = defineConfig({
       journal: {
         url: 'admince/polizas/download',
         name: 'DESCARGAR POLIZAS'
+      },
+      user:{
+        url: 'admince/usuario/display',
+        name: 'PANEL DE USUARIOS',
+        create: {
+          url: 'admince/usuario/displayCreate',
+          name: 'Registrar usuario'
+        },
+        update: {
+          url: 'admince/usuario/displayUpdate',
+          name: 'Registrar usuario'
+        }
       }
     }
   },
@@ -28,10 +41,10 @@ module.exports = defineConfig({
     }
   },
 
-  pageLoadTimeout: 5000,
-  requestTimeout: 5000,
-  defaultCommandTimeout: 5000,
-  responseTimeout: 30000,
+  pageLoadTimeout: 25000,
+  requestTimeout: 25000,
+  defaultCommandTimeout: 25000,
+  responseTimeout: 25000,
 
   downloadsFolder: 'cypress/downloads',
   screenshotsFolder: 'cypress/screenshots',

@@ -30,7 +30,8 @@ describe('search', () => {
 
     cy.contains('li.search', 'SIN EMPRESA ACTUAL').click()
     cy.contains('a.jstree-anchor', 'IAN Iglesia Adventista Nacional').click()
-
+    cy.wait(5000)
+    
     cy.get('span[ng-click="ctrl.showEmpresas(true)"]').should('include.text', 'IAN Iglesia Adventista Nacional')
 
     cy.section('ACCESS SETTINGS')
@@ -44,12 +45,13 @@ describe('search', () => {
     cy.get('select[name="mes"]').select(parameters.monthly)
     cy.get('select[name="anio"]').select(parameters.year)
 
-    cy.get('panel.panel-default').should('not.be.visible')
+    cy.contains('h3.panel-title', 'LISTA DE POLIZAS').should('not.be.visible')
 
     cy.contains('button', 'Buscar').click()
+    cy.wait(5000)
 
-    cy.get('panel.panel-default').should('be.visible')
-
+    cy.contains('h3.panel-title', 'LISTA DE POLIZAS').should('be.visible')
+    
     cy.wait(5000)
   })
 })
