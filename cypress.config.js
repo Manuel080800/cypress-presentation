@@ -3,12 +3,23 @@ const { defineConfig } = require("cypress");
 module.exports = defineConfig({
   env: {
     username: 'shotsware',
+    name: 'Shotsware Shotsware',
     password: '1234',
-    url: 'http://sunplusxtra.org/admince/login',
+    url: 'http://localhost/admince/login',
     api: '',
     test: {
       username: 'cypress-development',
       password: '123456'
+    },
+    validate: {
+      dashboard: {
+        url: 'admince/home/display',
+        name: 'Dashboard'
+      },
+      journal: {
+        url: 'admince/polizas/download',
+        name: 'DESCARGAR POLIZAS'
+      }
     }
   },
   
