@@ -39,6 +39,7 @@ describe('delete-user', () => {
     cy.section('ASSERTINS FOR DELETE USER');
     cy.get('p.lead.text-muted').should('include.text', 'Está seguro de eliminar el usuario ' + username + '?');
     cy.contains('button.confirm', 'Aceptar').wait(2000).click();
+    cy.get('.alert.alert-success').should('be.visible').and('include.text', 'El usuario ' + username + ' ha sido eliminado.');
   }
   
   it('passes the delete user process', () => {

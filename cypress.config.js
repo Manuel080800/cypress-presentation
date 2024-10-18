@@ -9,7 +9,7 @@ module.exports = defineConfig({
     company: 'IAN Iglesia Adventista Nacional',
     test: {
       name: 'Cypress Automation',
-      username: 'cypress-dev-5',
+      username: 'cypress-dev-10',
       password: '123456',
       data: {
         name: 'Cypress',
