@@ -9,5 +9,6 @@ describe('login', () => {
     cy.url().should('include', Cypress.env('assertions').dashboard.url);
     cy.get('.pageheader').should('contain', Cypress.env('assertions').dashboard.name);
     cy.get('li.dropdown.profile').should('include.text', Cypress.env('name'));
+    cy.wait(5000);
   });
 });

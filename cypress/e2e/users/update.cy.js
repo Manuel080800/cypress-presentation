@@ -80,5 +80,6 @@ describe('update-user', () => {
     completeDataUser(Cypress.env('test').update);
     completeLocationUser(Cypress.env('test').update);
     completeAccountUser(Cypress.env('test').username, Cypress.env('test').update);
+    cy.wait(5000);
   });
 });

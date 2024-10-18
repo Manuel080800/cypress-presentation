@@ -47,5 +47,6 @@ describe('delete-user', () => {
     company(Cypress.env('company'));
     accessUsers(Cypress.env('assertions').user);
     deleteUser(Cypress.env('test').username);
+    cy.wait(5000);
   });
 });

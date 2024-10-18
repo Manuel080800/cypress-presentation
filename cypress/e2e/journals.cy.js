@@ -47,5 +47,6 @@ describe('journals', () => {
     company(Cypress.env('company'));
     accessJournal(Cypress.env('assertions').journal);
     filterJournal(Cypress.env('search'));
+    cy.wait(5000);
   });
 });

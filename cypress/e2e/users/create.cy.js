@@ -108,5 +108,6 @@ describe('create-user', () => {
     completeAccountUser(Cypress.env('test').username, Cypress.env('test').password, Cypress.env('test').data);
     logout();
     login(Cypress.env('test').username, Cypress.env('test').password, Cypress.env('assertions').dashboard, Cypress.env('test').name);
+    cy.wait(5000);
   });
 });
