@@ -1,68 +1,84 @@
-import 'cypress-plugin-steps'
+import 'cypress-plugin-steps';
 
 describe('update-user', () => {
+  // Globals steps
+  const login = (username, password, assertions, name) => {
+    cy.section('LOGIN');
+    cy.login(username, password);
 
-  beforeEach(() => {
-    cy.section('LOGIN')
-    cy.visit(Cypress.env('url'))
-    cy.get('#usuario').type(Cypress.env('test').username)
-    cy.get('#contraseña').type(Cypress.env('test').password)
-    cy.get('button[type="submit"]').click()
-    cy.wait(1500)
+    cy.section('ASSERTIONS FOR LOGIN');
+    cy.url().should('include', assertions.url);
+    cy.get('.pageheader').should('contain', assertions.name);
+    cy.get('li.dropdown.profile').should('include.text', name);
+  }
 
-    // assersiones
-    cy.get('.pageheader').wait(2000).should('contain', Cypress.env('validate').dashboard.name)
-    cy.url().should('include', Cypress.env('validate').dashboard.url);
-    cy.get('li.dropdown.profile').should('include.text', Cypress.env('test').name)
+  const company = (company) => {
+    cy.section('SELECT COMPANY');
+    cy.company();
 
-    cy.wait(2500)
-  })
+    cy.section('ASSERTIONS FOR SELECT COMPANY');
+    cy.get('span[ng-click="ctrl.showEmpresas(true)"]').should('include.text', company);
+  }
 
-  it('passes', () => {
-    cy.get('span[ng-click="ctrl.showEmpresas(true)"]').should('include.text', 'SIN EMPRESA ACTUAL')
-
-    cy.contains('li.search', 'SIN EMPRESA ACTUAL').click()
-    cy.contains('a.jstree-anchor', 'IAN Iglesia Adventista Nacional').click()
-    cy.wait(2500)
-    
-    cy.get('span[ng-click="ctrl.showEmpresas(true)"]').should('include.text', 'IAN Iglesia Adventista Nacional')
-
-    cy.section('SELECT USERS')
+  // Specific steps
+  const accessUsers = (assertions) => {
+    cy.section('ACCESS USER');
     cy.contains('a', 'Configuracion').click();
     cy.contains('a', 'Administración').click();
     cy.contains('a', 'Usuarios').click();
 
-    cy.get('.pageheader').wait(2000).should('contain', Cypress.env('validate').user.name)
-    cy.url().should('include', Cypress.env('validate').user.url);
+    cy.section('ASSERTIONS FOR ACCESS USER');
+    cy.url().should('include', assertions.url);
+    cy.get('.pageheader').should('contain', assertions.name);
+  }
 
-    cy.section('UPDATE USER')
-    cy.get('button[title="Actualizar ' + Cypress.env('test').username + '"]').click();
+  const updateUser = (username, assertions) => {
+    cy.section('UPDATE USER');
+    cy.get('button[title="Actualizar ' + username + '"]').click();
 
-    cy.get('.pageheader').wait(2000).should('contain', Cypress.env('validate').user.update.name)
-    cy.url().should('include', Cypress.env('validate').user.update.url);
+    cy.section('ASSERTINS FOR UPDATE USER');
+    cy.url().should('include', assertions.url);
+    cy.get('.pageheader').should('contain', assertions.name);
+  }
 
-    cy.step('UPDATE USER: SECTION 1')
-    cy.get('a[href="#datosUsuarioTab"]').should('include.text', '1 Datos De Usuario')
+  const completeDataUser = (data) => {
+    cy.section('COMPLETE DATA USER');
+    cy.get('#txtApellidos').clear().type(data.lastName);
 
-    cy.get('#txtApellidos').clear().type('Framework')
-    cy.contains('button.button-next', 'Siguiente').click()
-    
-    cy.step('UPDATE USER: SECTION 2')
-    cy.get('a[href="#datosUbicacionTab"]').should('include.text', '2 Datos De Ubicación')
+    cy.section('ASSERTINS FOR COMPLETE DATA USER');
+    cy.get('a[href="#datosUsuarioTab"]').should('include.text', '1 Datos De Usuario');
+    cy.contains('button.button-next', 'Siguiente').click();
+  }
 
-    cy.get('[id="usuario.datosUbicacion.direccion"]').clear().type('Implementado en esta plataforma');
-    cy.get('#correoElectronico').clear().type('framework@cypress.cy')
-    cy.contains('button.button-next', 'Siguiente').click()
+  const completeLocationUser = (data) => {
+    cy.section('COMPLETE LOCATION USER');
+    cy.get('[id="usuario.datosUbicacion.direccion"]').clear().type(data.dataLocation);
+    cy.get('#correoElectronico').clear().type(data.email)
 
-    cy.step('UPDATE USER: SECTION 3')
-    cy.get('a[href="#cuentaAccesoTab"]').should('include.text', '3 Cuenta De Acceso')
+    cy.section('ASSERTINS FOR COMPLETE LOCATION USER');
+    cy.get('a[href="#datosUbicacionTab"]').should('include.text', '2 Datos De Ubicación');
+    cy.contains('button.button-next', 'Siguiente').click();
+  }
 
-    cy.get('input.select2-search__field[type="search"]').type('cont')
-    cy.get('.select2-results__options').contains('contador').click();
-    cy.contains('button.button-submit', 'Modificar Usuario').click()
-    cy.contains('button.confirm', 'Guardar').wait(2000).click()
-    cy.wait(5000)
+  const completeAccountUser = (username, data) => {
+    cy.section('COMPLETE ACCOUNT USER');
+    cy.get('input.select2-search__field[type="search"]').type(data.rol.shortName);
+    cy.get('.select2-results__options').contains(data.rol.name).click();
 
-    cy.get('.alert.alert-success').should('be.visible').and('include.text', 'El usuario "' + Cypress.env('test').username + '" ha sido modificado satisfactoriamente.');
-  })
-})
+    cy.section('ASSERTINS FOR COMPLETE ACCOUNT USER');
+    cy.get('a[href="#cuentaAccesoTab"]').should('include.text', '3 Cuenta De Acceso');
+    cy.contains('button.button-submit', 'Modificar Usuario').click();
+    cy.contains('button.confirm', 'Guardar').wait(2000).click();
+    cy.get('.alert.alert-success').should('be.visible').and('include.text', 'El usuario "' + username + '" ha sido modificado satisfactoriamente.');
+  }
+  
+  it('passes the update user process', () => {
+    login(Cypress.env('username'), Cypress.env('password'), Cypress.env('assertions').dashboard, Cypress.env('name'));
+    company(Cypress.env('company'));
+    accessUsers(Cypress.env('assertions').user);
+    updateUser(Cypress.env('test').username, Cypress.env('assertions').user.update);
+    completeDataUser(Cypress.env('test').update);
+    completeLocationUser(Cypress.env('test').update);
+    completeAccountUser(Cypress.env('test').username, Cypress.env('test').update);
+  });
+});

@@ -1,111 +1,112 @@
-import 'cypress-plugin-steps'
-
-const attributes = {
-  'city': 'input[data-ng-model="ctrl.ciudadSelected"]'
-}
+import 'cypress-plugin-steps';
 
 describe('create-user', () => {
+  // Globals steps
+  const login = (username, password, assertions, name) => {
+    cy.section('LOGIN');
+    cy.login(username, password);
 
-  beforeEach(() => {
-    // normal
-    cy.section('LOGIN')
-    cy.visit(Cypress.env('url'))
-    cy.get('#usuario').type(Cypress.env('username'))
-    cy.get('#contraseña').type(Cypress.env('password'))
-    cy.get('button[type="submit"]').click()
+    cy.section('ASSERTIONS FOR LOGIN');
+    cy.url().should('include', assertions.url);
+    cy.get('.pageheader').should('contain', assertions.name);
+    cy.get('li.dropdown.profile').should('include.text', name);
+  }
 
-    // assersiones
-    cy.get('.pageheader').wait(2000).should('contain', Cypress.env('validate').dashboard.name)
-    cy.url().should('include', Cypress.env('validate').dashboard.url);
-    cy.get('li.dropdown.profile').should('include.text', Cypress.env('name'))
+  const company = (company) => {
+    cy.section('SELECT COMPANY');
+    cy.company();
 
-    cy.wait(2500)
-  })
+    cy.section('ASSERTIONS FOR SELECT COMPANY');
+    cy.get('span[ng-click="ctrl.showEmpresas(true)"]').should('include.text', company);
+  }
 
-  it('passes', () => {
-    cy.section('SELECT COMPANY')
-
-    cy.get('span[ng-click="ctrl.showEmpresas(true)"]').should('include.text', 'SIN EMPRESA ACTUAL')
-
-    cy.contains('li.search', 'SIN EMPRESA ACTUAL').click()
-    cy.contains('a.jstree-anchor', 'IAN Iglesia Adventista Nacional').click()
-    cy.wait(2500)
-    
-    cy.get('span[ng-click="ctrl.showEmpresas(true)"]').should('include.text', 'IAN Iglesia Adventista Nacional')
-
-    
-
-    cy.section('SELECT USERS')
+  // Specific steps
+  const accessUsers = (assertions) => {
+    cy.section('ACCESS USER');
     cy.contains('a', 'Configuracion').click();
     cy.contains('a', 'Administración').click();
     cy.contains('a', 'Usuarios').click();
 
-    cy.section('CREATE USER')
+    cy.section('ASSERTIONS FOR ACCESS USER');
+    cy.url().should('include', assertions.url);
+    cy.get('.pageheader').should('contain', assertions.name);
+  }
 
-    cy.get('.pageheader').wait(2000).should('contain', Cypress.env('validate').user.name)
-    cy.url().should('include', Cypress.env('validate').user.url);
+  const createUser = (assertions) => {
+    cy.section('CREATE USER');
+    cy.contains('button', 'Crear Usuario').click();
 
-    cy.contains('button', 'Crear Usuario').click()
+    cy.section('ASSERTINS FOR CREATE USER');
+    cy.url().should('include', assertions.url);
+    cy.get('.pageheader').should('contain', assertions.name);
+  }
 
-    cy.get('.pageheader').wait(2000).should('contain', Cypress.env('validate').user.create.name)
-    cy.url().should('include', Cypress.env('validate').user.create.url);
+  const completeDataUser = (data) => {
+    cy.section('COMPLETE DATA USER');
+    cy.get('#txtNombres').type(data.name);
+    cy.get('#txtApellidos').type(data.lastName);
 
-    cy.get('a[href="#datosUsuarioTab"]').should('include.text', '1 Datos De Usuario')
+    cy.section('ASSERTINS FOR COMPLETE DATA USER');
+    cy.get('a[href="#datosUsuarioTab"]').should('include.text', '1 Datos De Usuario');
+    cy.contains('button.button-next', 'Siguiente').click();
+  }
 
-    cy.get('#txtNombres').type('Cypress')
-    cy.get('#txtApellidos').type('Automation')
-    cy.contains('button.button-next', 'Siguiente').click()
+  const completeLocationUser = (data) => {
+    cy.section('COMPLETE LOCATION USER');
+    cy.get('#idEstado').select(data.state);
+    cy.get('input[data-ng-model="ctrl.ciudadSelected"]').eq(1).type(data.city.shortName);
+    cy.get('ul.dropdown-menu li').filter((index, el) => Cypress.$(el).text().trim() === data.city.name).click();
+    cy.get('[id="usuario.datosUbicacion.codigoPostal"]').type(data.postalCode);
+    cy.get('[id="usuario.datosUbicacion.telefono"]').type(data.phone);
+    cy.get('[id="usuario.datosUbicacion.direccion"]').type(data.dataLocation);
+    cy.get('#correoElectronico').type(data.email);
 
-    cy.get('a[href="#datosUbicacionTab"]').should('include.text', '2 Datos De Ubicación')
+    cy.section('ASSERTINS FOR COMPLETE LOCATION USER');
+    cy.get('a[href="#datosUbicacionTab"]').should('include.text', '2 Datos De Ubicación');
+    cy.contains('button.button-next', 'Siguiente').click();
+  }
 
-    cy.get('#idEstado').select('Yucatán')
-    cy.get('input[data-ng-model="ctrl.ciudadSelected"]').eq(1).type('Mé')
-    cy.get('ul.dropdown-menu li').filter((index, el) => Cypress.$(el).text().trim() === 'Mérida').click()
-    cy.get('[id="usuario.datosUbicacion.codigoPostal"]').type('97000');
-    cy.get('[id="usuario.datosUbicacion.telefono"]').type('6517988486');
-    cy.get('[id="usuario.datosUbicacion.direccion"]').type('Sin proporcionar');
-    cy.get('#correoElectronico').type('automation@cypress.cy')
-    cy.contains('button.button-next', 'Siguiente').click()
-    
-    cy.get('a[href="#cuentaAccesoTab"]').should('include.text', '3 Cuenta De Acceso')
-
-    cy.intercept('GET', '/api/your-endpoint').as('getToast');
-    cy.get('#idUsuario').type(Cypress.env('test').username)
+  const completeAccountUser = (username, password, data) => {
+    cy.section('COMPLETE ACCOUNT USER');
+    cy.get('#idUsuario').type(username)
     cy.get('#idUsuario').blur(); 
 
-
+    cy.step('VALIDATION USER');
     cy.get('body').wait(2000).then(($body) => {
       if ($body.find('#toast-container').length > 0) {
         if ($body.find('#toast-container:contains("El usuario ya está en uso")').length > 0) {
-          throw new Error('expected ' + '"' + '#toast-container:contains("El usuario ya está en uso")' + '"' +' to exists');
+          throw new Error('expected ' + '"' + username + '"' +' to exists');
         }
       }
     });
 
-    cy.get('#password').type(Cypress.env('test').password)
-    cy.get('#passwordConfirm').type(Cypress.env('test').password)
-    cy.get('input.select2-search__field[type="search"]').type('admin')
-    cy.get('.select2-results__options').contains('administrador').click();
-    cy.contains('button.button-submit', 'Crear Usuario').click()
-    cy.contains('button.confirm', 'Guardar').wait(2000).click()
+    cy.get('#password').type(password);
+    cy.get('#passwordConfirm').type(password);
+    cy.get('input.select2-search__field[type="search"]').type(data.rol.shortName);
+    cy.get('.select2-results__options').contains(data.rol.name).click();
 
-    cy.wait(5000)
+    cy.section('ASSERTINS FOR COMPLETE ACCOUNT USER');
+    cy.get('a[href="#cuentaAccesoTab"]').should('include.text', '3 Cuenta De Acceso');
+    cy.contains('button.button-submit', 'Crear Usuario').click();
+    cy.contains('button.confirm', 'Guardar').wait(2000).click();
+    cy.get('.alert.alert-success').should('be.visible').and('include.text', 'El usuario "' + username + '" ha sido creado satisfactoriamente.');
+  }
 
-    cy.get('.alert.alert-success').should('be.visible').and('include.text', 'El usuario "' + Cypress.env('test').username + '" ha sido creado satisfactoriamente.');
-
-    cy.section('LOGOUT')
-    cy.get('li.dropdown.profile').click()
+  const logout = () => {
+    cy.section('LOGOUT');
+    cy.get('li.dropdown.profile').click();
     cy.contains('a', 'Log Out').click();
-
-    cy.section('LOGIN USING CYPRESS')
-    cy.get('#usuario').type(Cypress.env('test').username)
-    cy.get('#contraseña').type(Cypress.env('test').password)
-    cy.get('button[type="submit"]').click()
-    cy.wait(5000)
-
-    // assersiones
-    cy.get('.pageheader').wait(2000).should('contain', Cypress.env('validate').dashboard.name)
-    cy.url().should('include', Cypress.env('validate').dashboard.url);
-    cy.get('li.dropdown.profile').should('include.text', Cypress.env('test').name)
-  })
-})
+  }
+  
+  it('passes the create user process', () => {
+    login(Cypress.env('username'), Cypress.env('password'), Cypress.env('assertions').dashboard, Cypress.env('name'));
+    company(Cypress.env('company'));
+    accessUsers(Cypress.env('assertions').user);
+    createUser(Cypress.env('assertions').user.create);
+    completeDataUser(Cypress.env('test').data);
+    completeLocationUser(Cypress.env('test').data);
+    completeAccountUser(Cypress.env('test').username, Cypress.env('test').password, Cypress.env('test').data);
+    logout();
+    login(Cypress.env('test').username, Cypress.env('test').password, Cypress.env('assertions').dashboard, Cypress.env('test').name);
+  });
+});

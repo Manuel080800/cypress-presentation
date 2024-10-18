@@ -2,17 +2,47 @@ const { defineConfig } = require("cypress");
 
 module.exports = defineConfig({
   env: {
-    username: 'shotsware',
     name: 'Shotsware Shotsware',
+    username: 'shotsware',
     password: '1234',
     url: 'http://localhost/admince/login',
-    api: '',
+    company: 'IAN Iglesia Adventista Nacional',
     test: {
-      username: 'cypress-dev-1',
+      name: 'Cypress Automation',
+      username: 'cypress-dev-5',
       password: '123456',
-      name: 'Cypress Automation'
+      data: {
+        name: 'Cypress',
+        lastName: 'Automation',
+        state: 'Yucatán',
+        city: {
+          shortName: 'Mé',
+          name: 'Mérida'
+        },
+        postalCode: '97000',
+        phone: '6517988486',
+        dataLocation: 'Sin proporcionar',
+        email: 'automation@cypress.cy',
+        rol: {
+          shortName: 'admi',
+          name: 'administrador'
+        }
+      },
+      update: {
+        lastName: 'Framework',
+        dataLocation: 'Implementado en esta plataforma',
+        email: 'framework@cypress.cy',
+        rol: {
+          shortName: 'cont',
+          name: 'contador'
+        }
+      }
     },
-    validate: {
+    search: {
+      monthly: '1',
+      year: '2018'
+    },
+    assertions: {
       dashboard: {
         url: 'admince/home/display',
         name: 'Dashboard'

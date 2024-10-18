@@ -1,18 +1,13 @@
-import 'cypress-plugin-steps'
+import 'cypress-plugin-steps';
 
 describe('login', () => {
-  it('passed', () => {
-    // normal
-    cy.section('LOGIN')
-    cy.visit(Cypress.env('url'))
+  it('passes the login process', () => {
+    cy.section('LOGIN');
+    cy.login(Cypress.env('username'), Cypress.env('password'));
 
-    cy.get('#usuario').type(Cypress.env('username'))
-    cy.get('#contraseña').type(Cypress.env('password'))
-    cy.get('button[type="submit"]').click()
-
-    // assersiones
-    cy.get('.pageheader').wait(2000).should('contain', Cypress.env('validate').dashboard.name)
-    cy.url().should('include', Cypress.env('validate').dashboard.url);
-    cy.get('li.dropdown.profile').should('include.text', Cypress.env('name'))
-  })
-})
+    cy.section('ASSERTIONS LOGIN')
+    cy.url().should('include', Cypress.env('assertions').dashboard.url);
+    cy.get('.pageheader').should('contain', Cypress.env('assertions').dashboard.name);
+    cy.get('li.dropdown.profile').should('include.text', Cypress.env('name'));
+  });
+});

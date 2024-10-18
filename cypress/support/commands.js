@@ -23,3 +23,15 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('login', (username, password) => {
+    cy.visit(Cypress.env('url'));
+    cy.get('#usuario').type(username);
+    cy.get('#contraseña').type(password);
+    cy.get('button[type="submit"]').click();
+});
+
+Cypress.Commands.add('company', () => {
+    cy.contains('li.search', 'SIN EMPRESA ACTUAL').click()
+    cy.contains('a.jstree-anchor', 'IAN Iglesia Adventista Nacional').click()
+})

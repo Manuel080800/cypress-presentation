@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "cypress:open": "cypress open",
-    "cypress:open-ordered": "npx cypress run --spec 'cypress/e2e/login.cy.js' && npx cypress run --spec 'cypress/e2e/search.cy.js' && npx cypress run --spec 'cypress/e2e/users/create.cy.js' && npx cypress run --spec 'cypress/e2e/users/update.cy.js' && npx cypress run --spec 'cypress/e2e/users/delete.cy.js'"
+    "cypress:open-ordered": "npx cypress run --spec 'cypress/e2e/login.cy.js' && npx cypress run --spec 'cypress/e2e/journals.cy.js' && npx cypress run --spec 'cypress/e2e/users/create.cy.js' && npx cypress run --spec 'cypress/e2e/users/update.cy.js' && npx cypress run --spec 'cypress/e2e/users/delete.cy.js'"
   },
   "author": "Manuel Antonio Cetina Aguilar",
   "license": "ISC",

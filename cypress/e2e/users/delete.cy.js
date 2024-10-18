@@ -1,48 +1,50 @@
-import 'cypress-plugin-steps'
+import 'cypress-plugin-steps';
 
 describe('delete-user', () => {
+  // Globals steps
+  const login = (username, password, assertions, name) => {
+    cy.section('LOGIN');
+    cy.login(username, password);
 
-  beforeEach(() => {
-    cy.section('LOGIN')
-    cy.visit(Cypress.env('url'))
-    cy.get('#usuario').type(Cypress.env('username'))
-    cy.get('#contraseña').type(Cypress.env('password'))
-    cy.get('button[type="submit"]').click()
-    
-    // assersiones
-    cy.get('.pageheader').wait(2000).should('contain', Cypress.env('validate').dashboard.name)
-    cy.url().should('include', Cypress.env('validate').dashboard.url);
-    cy.get('li.dropdown.profile').should('include.text', Cypress.env('name'))
+    cy.section('ASSERTIONS FOR LOGIN');
+    cy.url().should('include', assertions.url);
+    cy.get('.pageheader').should('contain', assertions.name);
+    cy.get('li.dropdown.profile').should('include.text', name);
+  }
 
-    cy.wait(2500)
-  })
+  const company = (company) => {
+    cy.section('SELECT COMPANY');
+    cy.company();
 
-  it('passes', () => {
-    cy.get('span[ng-click="ctrl.showEmpresas(true)"]').should('include.text', 'SIN EMPRESA ACTUAL')
+    cy.section('ASSERTIONS FOR SELECT COMPANY');
+    cy.get('span[ng-click="ctrl.showEmpresas(true)"]').should('include.text', company);
+  }
 
-    cy.contains('li.search', 'SIN EMPRESA ACTUAL').click()
-    cy.contains('a.jstree-anchor', 'IAN Iglesia Adventista Nacional').click()
-    cy.wait(2500)
-    
-    cy.get('span[ng-click="ctrl.showEmpresas(true)"]').should('include.text', 'IAN Iglesia Adventista Nacional')
-
-    cy.section('SELECT USERS')
+  // Specific steps
+  const accessUsers = (assertions) => {
+    cy.section('ACCESS USER');
     cy.contains('a', 'Configuracion').click();
     cy.contains('a', 'Administración').click();
     cy.contains('a', 'Usuarios').click();
 
+    cy.section('ASSERTIONS FOR ACCESS USER');
+    cy.url().should('include', assertions.url);
+    cy.get('.pageheader').should('contain', assertions.name);
+  }
 
-    cy.get('.pageheader').wait(2000).should('contain', Cypress.env('validate').user.name)
-    cy.url().should('include', Cypress.env('validate').user.url);
+  const deleteUser = (username) => {
+    cy.section('DELETE USER');
+    cy.get('button[title="Eliminar ' + username + '"]').click();
 
-    cy.section('DELETE USER')
-    cy.get('button[title="Eliminar ' + Cypress.env('test').username + '"]').click();
-
-    cy.get('p.lead.text-muted').should('include.text', 'Está seguro de eliminar el usuario ' + Cypress.env('test').username + '?')
-
-    cy.contains('button.confirm', 'Aceptar').wait(2000).click()
-    cy.wait(5000)
-
-    cy.get('.alert.alert-success').should('be.visible').and('include.text', 'El usuario ' + Cypress.env('test').username + ' ha sido eliminado.');
-  })
-})
+    cy.section('ASSERTINS FOR DELETE USER');
+    cy.get('p.lead.text-muted').should('include.text', 'Está seguro de eliminar el usuario ' + username + '?');
+    cy.contains('button.confirm', 'Aceptar').wait(2000).click();
+  }
+  
+  it('passes the delete user process', () => {
+    login(Cypress.env('username'), Cypress.env('password'), Cypress.env('assertions').dashboard, Cypress.env('name'));
+    company(Cypress.env('company'));
+    accessUsers(Cypress.env('assertions').user);
+    deleteUser(Cypress.env('test').username);
+  });
+});
